@@ -272,6 +272,17 @@ components:
     description: "Ink-bordered square checkbox used in spec-checklists and the cover footer. Checked state fills ink and centers a cream multiplication-sign glyph (not a checkmark)."
 ---
 
+## Frontend Slides Fixed-Stage Policy
+
+When this design system is used by the `frontend-slides` skill, generate the final deck as a **fixed 1920×1080 stage** that scales uniformly to the browser viewport. The deck should preserve a 16:9 slide canvas on every screen, including phones; it may letterbox or pillarbox, but it should not reflow slide content for mobile.
+
+This policy has higher priority than any source-template responsive behavior described later in this file. If a later section says the original template is viewport-fluid, treat that as source history only, not as the target generation model for `frontend-slides`.
+
+This policy applies even if the source template was originally implemented with viewport-fluid CSS such as `100vw`, `100vh`, `vw`, `vh`, or `clamp()`. Treat those values as design proportions to translate into 1920×1080 stage coordinates, not as live responsive rules in the generated deck.
+
+Use `deck-stage.js` or an equivalent inline stage scaler for final output: render each slide at 1920×1080, scale the whole stage with one transform, and verify rendered screenshots for both text overflow and panel overlap.
+
+
 ## Overview
 
 Sakura Chroma is a **cassette-package editorial system** that treats every slide as a printed product page from a small Japanese audio-products catalogue. The visual metaphor is total: petal-cluster blob marks, diagonal multi-color ribbon bands, 12-point starburst seals, red rectangular stamps, mono-font spec rows, color-coded chips, and equalizer-style bar charts. Everything reads as if pulled from the back-page spread of a 1970s consumer-audio brochure — warm, hand-curated, industrially typeset.
@@ -552,10 +563,15 @@ No `@media print` rule is defined.
 
 ### Loading
 
+Both fonts are on Google Fonts — load via the standard Google Fonts URL alongside the template's existing Latin faces:
+
 ```html
-<link href="https://chinese-fonts-cdn.deno.dev/packages/zcool-xiaowei/dist/ZCOOLXiaoWei-Regular/result.css" rel="stylesheet">
-<link href="https://chinese-fonts-cdn.deno.dev/packages/lxgwwenkai/dist/LXGWWenKai-Regular/result.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=LXGW+WenKai+TC&display=swap" rel="stylesheet">
 ```
+
+**Do not load via cn-fontsource, chinese-fonts-cdn, or other CDNs** — those packages either don't exist (`cn-fontsource-zcool-xiaowei` returns 404) or are unreliable behind corporate proxies. ZCOOL XiaoWei and LXGW WenKai are both Google-hosted; that is the only reliable CDN for them.
 
 Then append the CJK families to the appropriate font stacks:
 ```css

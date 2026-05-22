@@ -117,7 +117,19 @@ A required section. Most templates in this library will be used for Chinese deck
 - **Strategy A (default for most templates)**: single CJK family for the whole text, e.g. `font-family: 'Noto Sans SC', sans-serif`. The CJK font's built-in Latin glyphs render any English mixed in. Consistent across platforms, no baseline issues.
 - **Strategy C (for literary/editorial templates only)**: Latin face first with CJK fallback, e.g. `font-family: 'Instrument Serif', 'Noto Serif SC', serif`. Use only when the template's Latin face carries strong identity (Instrument Serif, Playfair Display, custom serifs). Warn about potential baseline mismatch at display sizes.
 
-**Loading** — Provide an exact `<link>` snippet the agent can drop into the template's `<head>` to load the recommended Chinese fonts.
+**Loading** — Provide an exact `<link>` snippet the agent can drop into the template's `<head>` to load the recommended Chinese fonts. Include an authoritative CDN-routing table immediately under the snippet so downstream agents do not invent alternative CDN paths:
+
+| Font | Correct CDN | Wrong CDN (do not use) |
+|---|---|---|
+| Noto Sans SC, Noto Serif SC | Google Fonts: `family=Noto+Sans+SC` / `family=Noto+Serif+SC` | — |
+| ZCOOL XiaoWei | Google Fonts: `family=ZCOOL+XiaoWei` | `cn-fontsource-zcool-xiaowei` (does not exist on npm) |
+| ZCOOL KuaiLe | Google Fonts: `family=ZCOOL+KuaiLe` | — |
+| Ma Shan Zheng, Liu Jian Mao Cao, Long Cang, Zhi Mang Xing | Google Fonts (each on its own `family=...` param) | — |
+| LXGW WenKai TC | Google Fonts: `family=LXGW+WenKai+TC` | chinese-fonts-cdn.deno.dev (proxies through unreliable mirrors) |
+| Smiley Sans Oblique (得意黑) | cn-fontsource: `https://cdn.jsdelivr.net/npm/cn-fontsource-smiley-sans-oblique-regular/font.css` | Google Fonts (not hosted there) |
+| Yozai (悠哉字体) | cn-fontsource: `https://cdn.jsdelivr.net/npm/cn-fontsource-yozai-regular/font.css` | Google Fonts (not hosted there) |
+
+Explicitly state: "**Do not invent or substitute CDN paths**. If a font is recommended above, use the exact URL listed; if a font is not recommended, do not add it." This prevents downstream agents from generalizing the `cn-fontsource-<name>-regular` naming pattern to fonts that aren't actually on cn-fontsource (a common failure mode).
 
 **Universal CJK Adjustments** — A bullet list of the six universal rules. Include all six verbatim:
 1. **Line-height**: increase by ~15–25% from the Latin spec. Body 1.75–1.85, display 1.15–1.25.

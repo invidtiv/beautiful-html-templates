@@ -301,6 +301,17 @@ components:
     description: "Small pink right-arrow SVG used between process steps."
 ---
 
+## Frontend Slides Fixed-Stage Policy
+
+When this design system is used by the `frontend-slides` skill, generate the final deck as a **fixed 1920×1080 stage** that scales uniformly to the browser viewport. The deck should preserve a 16:9 slide canvas on every screen, including phones; it may letterbox or pillarbox, but it should not reflow slide content for mobile.
+
+This policy has higher priority than any source-template responsive behavior described later in this file. If a later section says the original template is viewport-fluid, treat that as source history only, not as the target generation model for `frontend-slides`.
+
+This policy applies even if the source template was originally implemented with viewport-fluid CSS such as `100vw`, `100vh`, `vw`, `vh`, or `clamp()`. Treat those values as design proportions to translate into 1920×1080 stage coordinates, not as live responsive rules in the generated deck.
+
+Use `deck-stage.js` or an equivalent inline stage scaler for final output: render each slide at 1920×1080, scale the whole stage with one transform, and verify rendered screenshots for both text overflow and panel overlap.
+
+
 ## Overview
 
 Pink Script is a **nocturnal couture editorial system** built on a single atmospheric premise: a deep warm-black surface lit from the upper-left by a slightly warmer #1A1218 ellipse that fades to near-black across the lower-right. The off-center light source reads as a studio softbox catching one corner of a magazine spread. Over this, a subtle film-grain overlay at 8% opacity with screen blend adds the photographic graininess of late-night editorial photography. Inside this surface sits a 1px hairline interior frame (paper-blush at 14% opacity, inset 36px from each edge) — the editorial border of every page. Without the lit gradient, the film grain, and the interior frame, the system collapses into flat dark UI.
@@ -600,6 +611,8 @@ Strategy A — extend each token's `fontFamily` to include the Chinese face afte
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
 ```
+
+**Critical — do not split fonts across CDNs**: All four Chinese fonts (Noto Serif SC, Noto Sans SC, ZCOOL XiaoWei) are on Google Fonts. Keep them in the single Google Fonts URL above. **Do not move ZCOOL XiaoWei into a `cn-fontsource-zcool-xiaowei` package** — that npm package does not exist, the CDN returns 404, and the browser silently falls through to system serif (PingFang on macOS), which renders the title in a generic thin serif rather than XiaoWei. This was a confirmed real failure in a previous generation.
 
 ### Universal CJK Adjustments
 
